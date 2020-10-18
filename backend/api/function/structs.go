@@ -1,9 +1,14 @@
 package main
 
-type Location struct {
-	LocationID   string `json:"locationID"`
-	LocationName  string `json:"locationName"`
-	Description  string `json:"description"`
-	latitude float32 `json:"latitude"`
-	longitude float32 `json:"longitude"`
+type UploadedData struct {
+	CameraID     string  `json:"cameraID"`
+	Base64Image string  `json:"base64Image"`
+}
+
+type ReturnedData struct {
+	CameraID     string  `json:"cameraID"`
+	Date string  `json:"date"`
+	NoFaceCovering string  `json:"noFaceCovering"`
+	ImproperFaceCovering string  `json:"improperFaceCovering"`
+	Total string  `json:"totalSeen"`
 }

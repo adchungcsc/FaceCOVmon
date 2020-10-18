@@ -1,4 +1,4 @@
-module https: //github.com/adchungcsc/AWSome-Serverless-Website/backend
+module https://github.com/adchungcsc/FaceCOVmon/backend
 
 go 1.15
 

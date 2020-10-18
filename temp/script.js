@@ -42,16 +42,7 @@ function makePredictions() {
     setInterval(async function() {
         /* this "detections" array has all the things like the "prediction results" as well as the "bounding box" configurations! */
         const detections = await faceapi.detectAllFaces(video);
-        document.getElementById("detected").innerHTML = ("found " + detections.length + " individuals");
-        //If face detected, post to the backend for processing.
-        if(detections.length > 0){
 
-            //conver to a png to send to the backend API
-            var dataURL = canvas.toDataURL('image/png);
-            fetch('https://api.mocki.io/v1/ddb6d39b', { method: 'POST', body: {} })
-                .then(response => response.json())
-                .then(data => console.log(data);
-        }
         /* resize the detected boxes to match our video dimensions */
         const resizedDetections = faceapi.resizeResults(detections, displaySize);
 
@@ -60,12 +51,19 @@ function makePredictions() {
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
         // use faceapi.draw to draw "detections"
         faceapi.draw.drawDetections(canvas, resizedDetections);
+        document.getElementById("detected").innerHTML = "found " + detections.length + " individuals";
+        //If face detected, post to the backend for processing.
+        if(detections.length > 0){
+            let dataURL = await canvas.toDataURL('image/png')
+            console.log(dataURL)
+            //await fetch('https://am6o2j3so8.execute-api.us-east-1.amazonaws.com/prod/upload?cameraID=\"test\"&base64Image=' + dataURL, { method: 'PUT', body: {} })
+        }
 
         // to draw expressions
         //faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
         // to draw face landmarks
         //faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
-    }, 500);
+    }, 1000);
 }
 
 

@@ -15,59 +15,59 @@ var errorLogger = log.New(os.Stderr, "ERROR ", log.Llongfile)
 
 
 func router(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+  fmt.Println(request.HTTPMethod)
   switch request.HTTPMethod {
   case "GET":
     return handleGet(request)
   case "PUT":
-    return handlePost(request)
+    return handlePut(request)
   default:
     return clientError(http.StatusMethodNotAllowed)
   }
 }
 
 func handleGet(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-  //Get location based on name.
-  locationName := request.QueryStringParameters["locationName"]
-  fmt.Println(locationName)
-  location, err := getDestination(locationName)
-  if err != nil {
-    return serverError(err)
-  }
-  if location == nil {
+  cameraID := request.QueryStringParameters["cameraID"]
+  date := request.QueryStringParameters["date"]
+  fmt.Println(cameraID)
+  fmt.Println(date)
+  tenantData, _ := getTenantData(&cameraID, &date)
+  //if err != nil {
+  //  return serverError(err)
+  //}
+  if tenantData == nil {
     return clientError(http.StatusNotFound)
   }
-  js, err := json.Marshal(location)
+  js, err := json.Marshal(tenantData)
   if err != nil {
     return serverError(err)
   }
+  if len(js) == 0{
+    //return empty json
+    return events.APIGatewayProxyResponse{
+      StatusCode: http.StatusOK,
+      Body:       "",
+    }, nil
+  }
+
   return events.APIGatewayProxyResponse{
     StatusCode: http.StatusOK,
     Body:       string(js),
   }, nil
 }
 
-func validateNewLocation(location Location) bool{
-  return location.LocationName == "" || location.Description == ""
-}
+func handlePut(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+  cameraID := request.QueryStringParameters["cameraID"]
+  image := request.QueryStringParameters["base64Image"]
+  fmt.Println(cameraID)
+  fmt.Println(image)
 
-func handlePost(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-  if request.Headers["content-type"] != "application/json" && request.Headers["Content-Type"] != "application/json" {
-    return clientError(http.StatusNotAcceptable)
-  }
-
-  location := new(Location)
-  err := json.Unmarshal([]byte(request.Body), location)
-  fmt.Println(location)
-
-  if err != nil {
+  //Validate inputs
+  if cameraID == "" || image == "" {
     return clientError(http.StatusUnprocessableEntity)
   }
 
-  if !validateNewLocation(*location) {
-    return clientError(http.StatusBadRequest)
-  }
-
-  err = insertDestination(location)
+  err := uploadData(cameraID, image)
   if err != nil {
     return serverError(err)
   }
