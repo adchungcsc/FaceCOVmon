@@ -1,1 +1,1 @@
-# FaceCOVmon
+Coming soon

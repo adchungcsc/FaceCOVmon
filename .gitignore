@@ -1,0 +1,14 @@
+#IDE
+.idea
+
+#Build Scripts
+build/node_modules/
+build/*.js
+build/!jest.config.js
+build/*.d.ts
+# CDK asset staging directory
+build/.cdk.staging
+build/cdk.out
+# Parcel build directories
+build/.cache
+build/.build
